@@ -1,5 +1,5 @@
 # blockchain
-
+基于vue3+typescript+naive的物流管理系统
 ## Project setup
 ```
 npm install
