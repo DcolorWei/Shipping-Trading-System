@@ -20,11 +20,11 @@ const router = createRouter({
 })
 
 
-router.beforeEach((to, from, next) => {
-  if (to.path != "/login") {
-    if (document.cookie.indexOf('userid') == -1)
-      router.push('/login')
-  }
+router.beforeEach((to, from, next) => {//未登录无法进入
+  // if (to.path != "/login") {
+  //   if (document.cookie.indexOf('userid') == -1)
+  //     router.push('/login')
+  // }
   next();
 });
 

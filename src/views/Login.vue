@@ -1,21 +1,36 @@
 <template>
   <div class="loginframe">
     <div class="loginpanel">
-      <div class="title" @click="panelStatus = true">物流管理系统</div>
+      <div class="title">物流管理系统</div>
       <div class="input">
-        <n-input
-          v-model:value="value"
-          type="text"
-          placeholder="ID/手机号/邮箱"
-        />
+        <n-popover placement="right" trigger="focus">
+          <template #trigger>
+            <n-input
+              v-model:value="loginForm.userid"
+              type="text"
+              placeholder="ID/手机号/邮箱"
+          /></template>
+          <span>aaa</span>
+        </n-popover>
       </div>
       <div class="input">
-        <n-input v-model:value="value" type="text" placeholder="6-16位密码" />
+        <n-input
+          v-model:value="loginForm.password"
+          type="password"
+          placeholder="6-16位密码"
+        />
+        <div class="tip">忘记密码？</div>
       </div>
 
       <div class="btns">
         <transition>
-          <n-button round dashed type="success" v-show="panelStatus">
+          <n-button
+            round
+            dashed
+            type="success"
+            v-show="panelStatus"
+            @click="login()"
+          >
             登录
           </n-button>
         </transition>
@@ -56,7 +71,12 @@
 
 <script lang="ts">
 import { defineComponent, reactive, Ref, ref } from "vue";
-import { NInput, NButton } from "naive-ui";
+import { NInput, NButton, NPopover } from "naive-ui";
+import router from "@/router/index";
+import * as cryptoTS from "crypto-ts";
+import axios from "axios";
+
+// import bcrypt from "bcrypt";
 export default defineComponent({
   name: "Login",
   setup() {
@@ -65,17 +85,41 @@ export default defineComponent({
       password: "",
     });
 
-    let panelStatus: Ref<boolean> = ref(true);
+    function encrypt(word: string) {
+      const key = cryptoTS.enc.Utf8.parse("sunyuqingcnmlgcb");
+      const srcs = cryptoTS.enc.Utf8.parse(word); //加密方式:时间戳＋密文
+      const encrypted = cryptoTS.AES.encrypt(srcs, key, {
+        mode: cryptoTS.mode.CBC,
+        padding: cryptoTS.pad.PKCS7,
+        iv: key,
+      });
+      return encrypted.toString();
+    }
+
+    let panelStatus: Ref<string> = ref("login");
+
+    async function login() {
+      console.log(encrypt("abc"));
+      await axios.post(
+        "http://49.232.128.228:8080/account/Login",
+        {
+          userid: loginForm.userid,
+          password: encrypt(loginForm.password),
+        },
+        {}
+      );
+      router.push("/");
+    }
     return {
       loginForm,
-
       panelStatus,
+      login,
     };
   },
-  methods: {},
   components: {
     NInput,
     NButton,
+    NPopover,
   },
 });
 </script>
@@ -115,15 +159,21 @@ export default defineComponent({
   font-weight: 600;
   padding: 10%;
 }
-.input {
+.loginpanel .input {
   padding: 2% 20%;
 }
-.btns {
+.loginpanel .btns {
   display: flex;
   justify-content: center;
 }
-.btns > * {
-  margin: 2% 6%;
+.loginpanel .tip {
+  position: relative;
+  text-align: right;
+  color: white;
+  cursor: pointer;
+}
+.loginpanel .btns > * {
+  margin: 0% 6%;
 }
 
 /* 切换到注册的动画 */
