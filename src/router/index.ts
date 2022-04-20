@@ -7,11 +7,25 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Home',
     component: Home
   },
+  {
+    path: '/login',
+    name: "Login",
+    component: () => import('../views/Login.vue')
+  }
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
+
+router.beforeEach((to, from, next) => {
+  if (to.path != "/login") {
+    if (document.cookie.indexOf('userid') == -1)
+      router.push('/login')
+  }
+  next();
+});
 
 export default router
