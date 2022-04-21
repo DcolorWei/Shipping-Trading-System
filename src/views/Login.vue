@@ -2,66 +2,102 @@
   <div class="loginframe">
     <div class="loginpanel">
       <div class="title">物流管理系统</div>
-      <div class="input">
-        <n-popover placement="right" trigger="focus">
-          <template #trigger>
+      <!--登录模块-->
+      <transition>
+        <div class="input" v-show="panelStatus">
+          <div>
+            <n-popover placement="right" trigger="focus">
+              <template #trigger>
+                <n-input
+                  v-model:value="loginForm.account"
+                  type="text"
+                  placeholder="ID/手机号/邮箱"
+              /></template>
+              <span>aaa</span>
+            </n-popover>
+          </div>
+          <div>
             <n-input
-              v-model:value="loginForm.userid"
-              type="text"
-              placeholder="ID/手机号/邮箱"
-          /></template>
-          <span>aaa</span>
-        </n-popover>
-      </div>
-      <div class="input">
-        <n-input
-          v-model:value="loginForm.password"
-          type="password"
-          placeholder="6-16位密码"
-        />
-        <div class="tip">忘记密码？</div>
-      </div>
-
-      <div class="btns">
-        <transition>
-          <n-button
-            round
-            dashed
-            type="success"
-            v-show="panelStatus"
-            @click="login()"
-          >
-            登录
-          </n-button>
-        </transition>
-        <transition>
-          <n-button
-            round
-            dashed
-            type="warning"
-            v-show="panelStatus"
-            @click="panelStatus = false"
-          >
-            注册
-          </n-button>
-        </transition>
-        <transition>
-          <n-button
-            round
-            dashed
-            type="success"
-            v-show="!panelStatus"
-            @click="panelStatus = true"
-          >
-            返回
-          </n-button>
-        </transition>
-        <transition>
-          <n-button round dashed type="warning" v-show="!panelStatus">
-            确定
-          </n-button>
-        </transition>
-      </div>
+              v-model:value="loginForm.password"
+              type="password"
+              placeholder="6-16位密码"
+            />
+            <div class="tip">
+              <span @click="panelStatus = false">注册</span>
+              <span>找回密码</span>
+            </div>
+          </div>
+          <div class="btns" v-show="panelStatus">
+            <n-button round type="success" size="large" @click="login()">
+              立即登录
+            </n-button>
+          </div>
+        </div>
+      </transition>
+      <!--注册模块-->
+      <transition mode="in-out">
+        <div class="input" v-show="!panelStatus">
+          <div>
+            <n-popover placement="right" trigger="focus">
+              <template #trigger>
+                <n-input
+                  v-model:value="registerForm.account"
+                  type="text"
+                  placeholder="账户名，仅支持英文和数字"
+              /></template>
+              <span>aaa</span>
+            </n-popover>
+          </div>
+          <div>
+            <n-popover placement="right" trigger="focus">
+              <template #trigger>
+                <n-input
+                  v-model:value="registerForm.password"
+                  type="text"
+                  placeholder="6-16位密码"
+              /></template>
+              <span>aaa</span>
+            </n-popover>
+          </div>
+          <div>
+            <n-popover placement="right" trigger="focus">
+              <template #trigger>
+                <n-input
+                  v-model:value="registerForm.email"
+                  type="text"
+                  placeholder="邮箱"
+              /></template>
+              <span>aaa</span>
+            </n-popover>
+          </div>
+          <div>
+            <n-row>
+              <n-col :span="18">
+                <n-input
+                  v-model:value="registerForm.authCode"
+                  type="text"
+                  placeholder="验证码"
+                />
+              </n-col>
+              <n-col :span="6">
+                <n-button type="success" @click="getAuthCode()">
+                  获取
+                </n-button>
+                <!-- <n-input
+                  v-model:value="registerForm.account"
+                  type="text"
+                  placeholder="验证码"
+                /> -->
+              </n-col>
+            </n-row>
+          </div>
+          <div class="btns" v-show="!panelStatus">
+            <n-button round type="success" size="large" @click="register()">
+              注册
+            </n-button>
+          </div>
+        </div>
+      </transition>
     </div>
     <div class="logincover">
       <img style="height: 100%" src="@/assets/cover.jpg" />
@@ -71,7 +107,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, Ref, ref } from "vue";
-import { NInput, NButton, NPopover } from "naive-ui";
+import { NInput, NButton, NPopover, NRow, NCol } from "naive-ui";
 import router from "@/router/index";
 import * as cryptoTS from "crypto-ts";
 import axios from "axios";
@@ -80,12 +116,33 @@ import axios from "axios";
 export default defineComponent({
   name: "Login",
   setup() {
-    let loginForm: { userid: string; password: string } = reactive({
-      userid: "",
+    interface loginInfo {
+      account: string;
+      password: string;
+    }
+
+    let loginForm: loginInfo = reactive({
+      account: "",
       password: "",
     });
 
-    function encrypt(word: string) {
+    interface registerInfo {
+      account: string;
+      password: string;
+      email: string;
+      authCode: string;
+    }
+
+    let registerForm: registerInfo = reactive({
+      account: "",
+      password: "",
+      email: "",
+      authCode: "",
+    });
+
+    let countDown: Ref<number> = ref(120);
+
+    function encrypt(word: string): string {
       const key = cryptoTS.enc.Utf8.parse("sunyuqingcnmlgcb");
       const srcs = cryptoTS.enc.Utf8.parse(word); //加密方式:时间戳＋密文
       const encrypted = cryptoTS.AES.encrypt(srcs, key, {
@@ -98,28 +155,56 @@ export default defineComponent({
 
     let panelStatus: Ref<string> = ref("login");
 
-    async function login() {
-      console.log(encrypt("abc"));
-      await axios.post(
-        "http://49.232.128.228:8080/account/Login",
-        {
-          userid: loginForm.userid,
+    function login() {
+      axios
+        .post("http://49.232.128.228:8080/account/Login", {
+          account: loginForm.account,
           password: encrypt(loginForm.password),
-        },
-        {}
-      );
-      router.push("/");
+        })
+        .then(() => {
+          router.push("/");
+        });
     }
+
+    async function getAuthCode() {
+      console.log(registerForm.email);
+      if (registerForm.email) {
+        await axios({
+          method: "GET",
+          url: "http://49.232.128.228:8080/account/AuthCode",
+          params: {
+            email: registerForm.email,
+          },
+        });
+      }
+    }
+    async function register() {
+      await axios.post("http://49.232.128.228:8080/account/Register", {
+        account: registerForm.account,
+        password: encrypt(registerForm.password),
+        email: registerForm.email,
+        authCode: registerForm.authCode,
+      });
+    }
+    
+
     return {
       loginForm,
+      registerForm,
       panelStatus,
       login,
+      register,
+      getAuthCode,
+      countDown,
     };
   },
+
   components: {
     NInput,
     NButton,
     NPopover,
+    NRow,
+    NCol,
   },
 });
 </script>
@@ -136,7 +221,7 @@ export default defineComponent({
 }
 .loginpanel {
   width: 30%;
-  height: 45%;
+  height: 50%;
   border: none;
   border-radius: 5%;
   box-shadow: 3px 3px 6px 3px rgba(0, 0, 0, 0.3);
@@ -157,29 +242,34 @@ export default defineComponent({
   color: white;
   font-size: 22px;
   font-weight: 600;
-  padding: 10%;
+  padding: 8%;
 }
-.loginpanel .input {
+
+.loginpanel .input > * {
   padding: 2% 20%;
 }
+
 .loginpanel .btns {
   display: flex;
   justify-content: center;
 }
+
 .loginpanel .tip {
   position: relative;
-  text-align: right;
   color: white;
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
 }
+
 .loginpanel .btns > * {
   margin: 0% 6%;
+  position: relative;
 }
 
 /* 切换到注册的动画 */
 .v-enter-from,
 .v-leave-to {
-  left: -100%;
   opacity: 0;
 }
 
@@ -189,8 +279,10 @@ export default defineComponent({
   opacity: 1;
 }
 
-.v-enter-active,
+.v-enter-active {
+  transition: 0.4s steps(1);
+}
 .v-leave-active {
-  transition: 0.3s linear;
+  transition: 0.2s linear;
 }
 </style>
