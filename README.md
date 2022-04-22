@@ -1,24 +1,26 @@
-# blockchain
-基于vue3+typescript+naive的物流管理系统
-## Project setup
+# 物流管理系统
+一个前后端分离的轻量化物流管理系统，基于Vue3+Naive开发，搭载Pinia状态管理和（待填）可视化库，使用Typescript语法。
+
+
+### 环境配置
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### 本地运行
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### 部署服务
 ```
 npm run build
 ```
 
-### Lints and fixes files
+### 格式化校验
 ```
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### 开发组
+海大开源&卷心菜工作室
