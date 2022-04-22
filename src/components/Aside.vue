@@ -4,38 +4,49 @@
       class="sideItem"
       v-for="(item, index) in barItemList"
       :key="index"
-    ></div>
+      @click="changePage(item.routePath)"
+    >
+      {{ item.icon }}
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive } from "vue";
+import { routeStore } from "@/store/route";
 export default defineComponent({
   setup() {
+    const route = routeStore();
+
     const barItemList = reactive([
       {
-        icon: "AddReactionOutlined",
-        routePath: "home",
+        icon: "账号",
+        routePath: "account",
       },
       {
-        icon: "QUERY",
-        routePath: "query",
+        icon: "任务",
+        routePath: "matter",
       },
       {
-        icon: "MANAGER",
-        routePath: "manager",
+        icon: "视图",
+        routePath: "chart",
       },
       {
-        icon: "ABOUT",
-        routePath: "about",
+        icon: "人员",
+        routePath: "staff",
       },
       {
-        icon: "HELP",
-        routePath: "help",
+        icon: "合作",
+        routePath: "company",
       },
     ]);
+
+    function changePage(routePath: string): void {
+      route.path = routePath;
+    }
     return {
       barItemList,
+      changePage,
     };
   },
 });
@@ -49,11 +60,17 @@ export default defineComponent({
 }
 
 .sideItem {
-  margin: 5px;
+  margin: 10px;
   width: 40px;
   height: 40px;
   border: 2px solid red;
   background: white;
   border-radius: 50%;
+  transition: 0.2s linear;
+}
+
+.sideItem:hover {
+  width: 50px;
+  height: 50px;
 }
 </style>

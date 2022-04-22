@@ -20,17 +20,13 @@ export default defineComponent({
         routePath: "query",
       },
       {
-        itemName: "MANAGER",
-        routePath: "manager",
+        itemName: "MESSAGE",
+        routePath: "massage",
       },
       {
         itemName: "ABOUT",
         routePath: "about",
-      },
-      {
-        itemName: "HELP",
-        routePath: "help",
-      },
+      }
     ]);
     return {
       barItemList,

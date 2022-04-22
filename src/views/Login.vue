@@ -1,5 +1,6 @@
 <template>
   <div class="loginframe">
+    <n-message-provider />
     <div class="loginpanel">
       <div class="title">物流管理系统</div>
       <!--登录模块-->
@@ -60,39 +61,45 @@
             </n-popover>
           </div>
           <div>
-            <n-popover placement="right" trigger="focus">
-              <template #trigger>
-                <n-input
-                  v-model:value="registerForm.email"
-                  type="text"
-                  placeholder="邮箱"
-              /></template>
-              <span>aaa</span>
-            </n-popover>
+            <n-row style="display:flex;just">
+              <n-col :span="18">
+                <n-popover placement="right" trigger="focus">
+                  <template #trigger>
+                    <n-input
+                      v-model:value="registerForm.email"
+                      type="text"
+                      placeholder="邮箱"
+                  /></template>
+                  <span>aaa</span>
+                </n-popover>
+              </n-col>
+              <n-col :span="6">
+                <n-button
+                  type="success"
+                  v-if="countDown == 0"
+                  @click="getAuthCode()"
+                >
+                  验证
+                </n-button>
+                <n-button type="info" v-else>
+                  {{ countDown + "s" }}
+                </n-button>
+              </n-col>
+            </n-row>
           </div>
           <div>
             <n-row>
-              <n-col :span="18">
+              <n-col :span="12">
                 <n-input
                   v-model:value="registerForm.authCode"
                   type="text"
                   placeholder="验证码"
                 />
               </n-col>
-              <n-col :span="6">
-                <n-button type="success" @click="getAuthCode()">
-                  获取
-                </n-button>
-                <!-- <n-input
-                  v-model:value="registerForm.account"
-                  type="text"
-                  placeholder="验证码"
-                /> -->
-              </n-col>
             </n-row>
           </div>
           <div class="btns" v-show="!panelStatus">
-            <n-button round type="success" size="large" @click="register()">
+            <n-button round type="warning" size="large" @click="register()">
               注册
             </n-button>
           </div>
@@ -107,7 +114,17 @@
 
 <script lang="ts">
 import { defineComponent, reactive, Ref, ref } from "vue";
-import { NInput, NButton, NPopover, NRow, NCol } from "naive-ui";
+import {
+  NInput,
+  NButton,
+  NPopover,
+  NRow,
+  NCol,
+  NMessageProvider,
+  useMessage,
+  MessageReactive,
+  MessageType,
+} from "naive-ui";
 import router from "@/router/index";
 import * as cryptoTS from "crypto-ts";
 import axios from "axios";
@@ -140,7 +157,18 @@ export default defineComponent({
       authCode: "",
     });
 
-    let countDown: Ref<number> = ref(120);
+    //验证码倒计时
+    let countDown: Ref<number> = ref(0);
+    function createMessage(
+      msgReactive: MessageReactive | null,
+      info: string,
+      type: MessageType
+    ) {
+      msgReactive = useMessage().create(info, {
+        type: type,
+        duration: 10000,
+      });
+    }
 
     function encrypt(word: string): string {
       const key = cryptoTS.enc.Utf8.parse("sunyuqingcnmlgcb");
@@ -167,7 +195,16 @@ export default defineComponent({
     }
 
     async function getAuthCode() {
-      console.log(registerForm.email);
+      countDown.value = 60;
+      let setIntervaler = setInterval(() => {
+        countDown.value--;
+        if (countDown.value == 0) {
+          clearInterval(setIntervaler);
+        }
+      }, 1000);
+
+      let msgReactive: MessageReactive | null = null;
+
       if (registerForm.email) {
         await axios({
           method: "GET",
@@ -175,6 +212,11 @@ export default defineComponent({
           params: {
             email: registerForm.email,
           },
+        }).then(() => {
+          setTimeout(() => {
+            msgReactive!.content = "验证码已下发至邮箱";
+            msgReactive!.type = "success";
+          }, 1000);
         });
       }
     }
@@ -186,7 +228,6 @@ export default defineComponent({
         authCode: registerForm.authCode,
       });
     }
-    
 
     return {
       loginForm,
@@ -196,6 +237,15 @@ export default defineComponent({
       register,
       getAuthCode,
       countDown,
+      createMessage,
+      info() {
+        useMessage().info(
+          "I don't know why nobody told you how to unfold your love",
+          {
+            keepAliveOnHover: true,
+          }
+        );
+      },
     };
   },
 
@@ -205,6 +255,7 @@ export default defineComponent({
     NPopover,
     NRow,
     NCol,
+    NMessageProvider,
   },
 });
 </script>

@@ -5,17 +5,31 @@
   <div class="header">
     <Top></Top>
   </div>
-  <div class="container"></div>
+  <div class="container">
+    <router-view />
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, watch } from "vue";
+import { routeStore } from "@/store/route";
 
 import Aside from "@/components/Aside.vue";
 import Top from "@/components/Top.vue";
+import router from "@/router";
 
 export default defineComponent({
   name: "Home",
+  setup() {
+    const route = routeStore();
+    watch(
+      route,
+      () => {
+        router.push(route.path);
+      },
+      { deep: true }
+    );
+  },
   components: {
     Aside,
     Top,
