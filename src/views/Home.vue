@@ -50,7 +50,8 @@ export default defineComponent({
   position: absolute;
   left: 8%;
   height: 10%;
-  width: 92%;
+  width: 86%;
+  padding-left: 4%;
   background: whitesmoke;
   display: flex;
   align-items: flex-end;
@@ -61,6 +62,6 @@ export default defineComponent({
   left: 8%;
   height: 90%;
   width: 92%;
-  background: #EEEEEE;
+  background: #eeeeee;
 }
 </style>

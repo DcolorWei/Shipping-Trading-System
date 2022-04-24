@@ -1,7 +1,7 @@
 const topRouter = [
     //manage不存在，五个侧边栏按钮为其子页面
     {
-        path: '/manage',
+        path: '/account',
         name: "Manage",
         itemName: "MANAGE",
         component: () => import('../views/side/account/Account.vue')

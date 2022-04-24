@@ -1,5 +1,5 @@
-interface routeItem { path: string, itemName: string }
+interface routeItem { path: string, itemName: string | number }
 
-export{
+export {
     routeItem
 }

@@ -16,8 +16,8 @@ export default defineComponent({
 
 <style scoped>
 .message-card {
-  margin: 1% 20%;
-  width: 60%;
+  margin: 3% 15%;
+  width: 70%;
   height: 80%;
   background: whitesmoke;
 }
