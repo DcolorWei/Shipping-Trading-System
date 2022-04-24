@@ -114,17 +114,9 @@
 
 <script lang="ts">
 import { defineComponent, reactive, Ref, ref } from "vue";
-import {
-  NInput,
-  NButton,
-  NPopover,
-  NRow,
-  NCol,
-  NMessageProvider,
-  useMessage,
-  MessageReactive,
-  MessageType,
-} from "naive-ui";
+import { NInput, NButton, NPopover, NRow, NCol } from "naive-ui";
+
+import { panelStatus, loginInfo, registerInfo } from "./Login.entity";
 import router from "@/router/index";
 import * as cryptoTS from "crypto-ts";
 import axios from "axios";
@@ -133,42 +125,20 @@ import axios from "axios";
 export default defineComponent({
   name: "Login",
   setup() {
-    interface loginInfo {
-      account: string;
-      password: string;
-    }
-
     let loginForm: loginInfo = reactive({
-      account: "",
-      password: "",
+      account: null,
+      password: null,
     });
 
-    interface registerInfo {
-      account: string;
-      password: string;
-      email: string;
-      authCode: string;
-    }
-
     let registerForm: registerInfo = reactive({
-      account: "",
-      password: "",
-      email: "",
-      authCode: "",
+      account: null,
+      password: null,
+      email: null,
+      authCode: null,
     });
 
     //验证码倒计时
     let countDown: Ref<number> = ref(0);
-    function createMessage(
-      msgReactive: MessageReactive | null,
-      info: string,
-      type: MessageType
-    ) {
-      msgReactive = useMessage().create(info, {
-        type: type,
-        duration: 10000,
-      });
-    }
 
     function encrypt(word: string): string {
       const key = cryptoTS.enc.Utf8.parse("sunyuqingcnmlgcb");
@@ -181,13 +151,13 @@ export default defineComponent({
       return encrypted.toString();
     }
 
-    let panelStatus: Ref<string> = ref("login");
+    let panelStatus: Ref<panelStatus> = ref("login");
 
     function login() {
       axios
         .post("http://49.232.128.228:8080/account/Login", {
           account: loginForm.account,
-          password: encrypt(loginForm.password),
+          password: encrypt(loginForm.password!),
         })
         .then(() => {
           router.push("/");
@@ -203,8 +173,6 @@ export default defineComponent({
         }
       }, 1000);
 
-      let msgReactive: MessageReactive | null = null;
-
       if (registerForm.email) {
         await axios({
           method: "GET",
@@ -214,8 +182,7 @@ export default defineComponent({
           },
         }).then(() => {
           setTimeout(() => {
-            msgReactive!.content = "验证码已下发至邮箱";
-            msgReactive!.type = "success";
+            alert("验证码发送成功");
           }, 1000);
         });
       }
@@ -223,7 +190,7 @@ export default defineComponent({
     async function register() {
       await axios.post("http://49.232.128.228:8080/account/Register", {
         account: registerForm.account,
-        password: encrypt(registerForm.password),
+        password: encrypt(registerForm.password!),
         email: registerForm.email,
         authCode: registerForm.authCode,
       });
@@ -237,15 +204,6 @@ export default defineComponent({
       register,
       getAuthCode,
       countDown,
-      createMessage,
-      info() {
-        useMessage().info(
-          "I don't know why nobody told you how to unfold your love",
-          {
-            keepAliveOnHover: true,
-          }
-        );
-      },
     };
   },
 
@@ -255,7 +213,6 @@ export default defineComponent({
     NPopover,
     NRow,
     NCol,
-    NMessageProvider,
   },
 });
 </script>
@@ -263,7 +220,7 @@ export default defineComponent({
 <style scoped>
 .loginframe {
   position: absolute;
-  background: #35415e;
+  background: whitesmoke;
   width: 100%;
   height: 100%;
   display: flex;
@@ -290,7 +247,7 @@ export default defineComponent({
 .loginpanel .title {
   display: flex;
   justify-content: center;
-  color: white;
+  color: black;
   font-size: 22px;
   font-weight: 600;
   padding: 8%;
@@ -307,9 +264,10 @@ export default defineComponent({
 
 .loginpanel .tip {
   position: relative;
-  color: white;
+  color: black;
   cursor: pointer;
   display: flex;
+  margin-top: 3%;
   justify-content: space-between;
 }
 

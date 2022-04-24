@@ -1,38 +1,15 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from '../views/Home.vue'
+import { sideRouter } from './side';
+import { topRouter } from './top';
+import { routeStore } from "@/store/route";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'Home',
     component: Home,
-    children: [
-      {
-        path: '/account',
-        name: "Account",
-        component: () => import('../views/basic/account/Account.vue')
-      },
-      {
-        path: '/chart',
-        name: "Chart",
-        component: () => import('../views/basic/chart/Chart.vue')
-      },
-      {
-        path: '/company',
-        name: "Company",
-        component: () => import('../views/basic/company/Company.vue')
-      },
-      {
-        path: '/matter',
-        name: "Matter",
-        component: () => import('../views/basic/matter/Matter.vue')
-      },
-      {
-        path: '/staff',
-        name: "Staff",
-        component: () => import('../views/basic/staff/Staff.vue')
-      },
-    ]
+    children: sideRouter.concat(topRouter)
   },
   {
     path: '/login',
@@ -52,6 +29,9 @@ router.beforeEach((to, from, next) => {//未登录无法进入
   //   if (document.cookie.indexOf('userid') == -1)
   //     router.push('/login')
   // }
+  
+  //刷新后同步store和router数据
+  routeStore().path=to.fullPath;
   next();
 });
 

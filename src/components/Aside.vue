@@ -4,42 +4,22 @@
       class="sideItem"
       v-for="(item, index) in barItemList"
       :key="index"
-      @click="changePage(item.routePath)"
+      @click="changePage(item.path)"
     >
-      {{ item.icon }}
+      {{ item.itemName }}
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive } from "vue";
+import { routeItem } from "./Aside.entity";
 import { routeStore } from "@/store/route";
+import { sideRouter } from "@/router/side";
 export default defineComponent({
   setup() {
     const route = routeStore();
-
-    const barItemList = reactive([
-      {
-        icon: "账号",
-        routePath: "account",
-      },
-      {
-        icon: "任务",
-        routePath: "matter",
-      },
-      {
-        icon: "视图",
-        routePath: "chart",
-      },
-      {
-        icon: "人员",
-        routePath: "staff",
-      },
-      {
-        icon: "合作",
-        routePath: "company",
-      },
-    ]);
+    const barItemList:routeItem[] = reactive(sideRouter);
 
     function changePage(routePath: string): void {
       route.path = routePath;
@@ -47,6 +27,7 @@ export default defineComponent({
     return {
       barItemList,
       changePage,
+      sideRouter,
     };
   },
 });
@@ -63,7 +44,7 @@ export default defineComponent({
   margin: 10px;
   width: 40px;
   height: 40px;
-  border: 2px solid red;
+  border: 2px solid #b3d0d6;
   background: white;
   border-radius: 50%;
   transition: 0.2s linear;

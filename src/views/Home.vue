@@ -13,7 +13,6 @@
 <script lang="ts">
 import { defineComponent, watch } from "vue";
 import { routeStore } from "@/store/route";
-
 import Aside from "@/components/Aside.vue";
 import Top from "@/components/Top.vue";
 import router from "@/router";
@@ -42,7 +41,7 @@ export default defineComponent({
   position: absolute;
   height: 100%;
   width: 8%;
-  background: #35415e;
+  background: whitesmoke;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -52,7 +51,7 @@ export default defineComponent({
   left: 8%;
   height: 10%;
   width: 92%;
-  background: #35415e;
+  background: whitesmoke;
   display: flex;
   align-items: flex-end;
 }
@@ -62,6 +61,6 @@ export default defineComponent({
   left: 8%;
   height: 90%;
   width: 92%;
-  background: #2a3550;
+  background: #EEEEEE;
 }
 </style>
