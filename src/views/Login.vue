@@ -154,14 +154,16 @@ export default defineComponent({
     let panelStatus: Ref<panelStatus> = ref("login");
 
     function login() {
-      axios
-        .post("http://49.232.128.228:8080/account/Login", {
+      axios({
+        method: "POST",
+        url: "http://49.232.128.228:8080/account/Login",
+        data: {
           account: loginForm.account,
           password: encrypt(loginForm.password!),
-        })
-        .then(() => {
-          router.push("/");
-        });
+        },
+      }).then(() => {
+        router.push("/");
+      });
     }
 
     async function getAuthCode() {
@@ -175,9 +177,9 @@ export default defineComponent({
 
       if (registerForm.email) {
         await axios({
-          method: "GET",
+          method: "POST",
           url: "http://49.232.128.228:8080/account/AuthCode",
-          params: {
+          data: {
             email: registerForm.email,
           },
         }).then(() => {

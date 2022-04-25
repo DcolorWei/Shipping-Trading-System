@@ -9,6 +9,7 @@
       <n-icon size="40" :component="iconList[index]" />
     </div>
   </div>
+  <div class="tab-bar"></div>
 </template>
 
 <script lang="ts">
@@ -54,17 +55,18 @@ export default defineComponent({
   align-items: center;
 }
 
-.sideItem {
+.sideItemList .sideItem {
   margin: 10px;
   width: 40px;
   height: 40px;
   border: 2px solid #b3d0d6;
   background: white;
   border-radius: 30%;
-  transition: 0.1s linear;
+  transition: 0.15s linear;
 }
 
-.sideItem:hover {
-  transform: scale(1.25);
+.sideItemList .sideItem:hover {
+  transform: scale(1.25) rotate(10deg);
 }
+
 </style>
