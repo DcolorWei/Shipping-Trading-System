@@ -2,21 +2,23 @@
   <div style="margin: 0 15%; height: 100%">
     <div class="title">通知中心</div>
     <div class="message-container">
-      <div class="message-list" v-if="messageList.length > 0">
-        >
+      <div class="message-list" v-show="messageList.length > 0">
         <div
           class="message-item"
           v-for="item in messageList"
           :key="item.messageId"
-        ></div>
+        >
+          <div>{{ item.companyName }}</div>
+          <div>{{ item.sendTime }}</div>
+        </div>
       </div>
-      <div class="message-content" v-if="messageList.length > 0">
+      <div class="message-content" v-show="messageList.length > 0">
         <div class="message-text">
           <n-skeleton text :repeat="10" />
           <n-skeleton text style="width: 60%" />
         </div>
       </div>
-      <div v-else>
+      <!-- <div v-if="messageList.length == 0">
         <div style="font-size: 200px; margin-bottom: -100px">🍵</div>
         <n-result
           status="209"
@@ -27,29 +29,34 @@
             <n-button>真是个杯具</n-button>
           </template>
         </n-result>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "vue";
-import { NSkeleton, NResult, NButton } from "naive-ui";
-import axios from "axios";
+import { defineComponent, reactive, watch } from "vue";
+import { NSkeleton } from "naive-ui";
+import { messageStore } from "@/store/message";
+
 export default defineComponent({
   setup() {
-    let messageList = reactive([]);
-    axios.get("http://49.232.128.228:8080/message/getMessage").then((res) => {
-      messageList = res.data;
-    });
+    let messageList: any[] = reactive([]);
+    watch(
+      messageStore(),
+      (news) => {
+        messageList = news.messageList;
+      },
+      {
+        immediate: true,
+      }
+    );
     return {
       messageList,
     };
   },
   components: {
     NSkeleton,
-    NResult,
-    NButton,
   },
 });
 </script>

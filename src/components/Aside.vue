@@ -22,7 +22,6 @@ import { ClipboardOutline, TimerOutline,LayersOutline } from "@vicons/ionicons5"
 import { TeamOutlined, UserOutlined } from "@vicons/antd";
 export default defineComponent({
   setup() {
-    const route = routeStore();
     const barItemList: routeItem[] = reactive(sideRouter);
 
     const iconList = [
@@ -33,7 +32,7 @@ export default defineComponent({
       TeamOutlined,
     ];
     function changePage(routePath: string): void {
-      route.path = routePath;
+      routeStore().path = routePath;
     }
     return {
       barItemList,

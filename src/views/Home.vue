@@ -8,7 +8,6 @@
   <div class="container">
     <div class="panel">
       <router-view></router-view>
-
       <div style="margin: 0 auto; padding-top: 5%" v-show="showHome">
         <div
           style="

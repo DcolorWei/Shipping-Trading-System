@@ -12,7 +12,7 @@
                 <n-input
                   v-model:value="loginForm.account"
                   type="text"
-                  placeholder="ID/手机号/邮箱"
+                  placeholder="账户名"
               /></template>
               <span>aaa</span>
             </n-popover>
@@ -24,7 +24,7 @@
               placeholder="6-16位密码"
             />
             <div class="tip">
-              <span @click="panelStatus = false">注册</span>
+              <span @click="panelStatus = 'register'">注册</span>
               <span>找回密码</span>
             </div>
           </div>
@@ -98,7 +98,7 @@
               </n-col>
             </n-row>
           </div>
-          <div class="btns" v-show="!panelStatus">
+          <div class="btns" v-show="panelStatus == 'register'">
             <n-button round type="warning" size="large" @click="register()">
               注册
             </n-button>
@@ -156,45 +156,51 @@ export default defineComponent({
     function login() {
       axios({
         method: "POST",
-        url: "http://49.232.128.228:8080/account/Login",
+        url: "https://cunyuqing.online:8081/account/Login",
         data: {
           account: loginForm.account,
           password: encrypt(loginForm.password!),
         },
-      }).then(() => {
+      }).then((res) => {
         router.push("/");
       });
     }
 
     async function getAuthCode() {
       countDown.value = 60;
-      let setIntervaler = setInterval(() => {
-        countDown.value--;
-        if (countDown.value == 0) {
-          clearInterval(setIntervaler);
-        }
-      }, 1000);
-
       if (registerForm.email) {
         await axios({
           method: "POST",
-          url: "http://49.232.128.228:8080/account/AuthCode",
+          url: "https://cunyuqing.online:8081/account/AuthCode",
           data: {
             email: registerForm.email,
           },
         }).then(() => {
+          let setIntervaler = setInterval(() => {
+            countDown.value--;
+            if (countDown.value == 0) {
+              clearInterval(setIntervaler);
+            }
+          }, 1000);
+
           setTimeout(() => {
             alert("验证码发送成功");
-          }, 1000);
+          }, 100);
         });
       }
     }
     async function register() {
-      await axios.post("http://49.232.128.228:8080/account/Register", {
-        account: registerForm.account,
-        password: encrypt(registerForm.password!),
-        email: registerForm.email,
-        authCode: registerForm.authCode,
+      axios({
+        url: "https://cunyuqing.online:8081/account/Register",
+        data: {
+          account: registerForm.account,
+          password: encrypt(registerForm.password!),
+          email: registerForm.email,
+          authCode: registerForm.authCode,
+        },
+      }).then(() => {
+        alert("注册成功！");
+        panelStatus = ref("login");
       });
     }
 
