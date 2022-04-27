@@ -26,12 +26,14 @@ export default defineComponent({
     const route = routeStore();
     let topTabShow = ref();
     const barItemList: routeItem[] = reactive(topRouter);
-    barItemList.unshift({ path: "/", itemName: "HOME" });
+    if (barItemList[0].itemName !== "HOME") {//不然顶栏没有首页，怪难看的
+      barItemList.unshift({ path: "/", itemName: "HOME" });
+    }
     watch(
       route,
       () => {
         const item = topRouter.find((e) => e.path == route.path);
-        topTabShow.value = item?.itemName || "MANAGE";//点击侧边栏
+        topTabShow.value = item?.itemName || "MANAGE"; //点击侧边栏
       },
       {
         immediate: true,

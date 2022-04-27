@@ -5,7 +5,7 @@
       <div class="title">物流管理系统</div>
       <!--登录模块-->
       <transition>
-        <div class="input" v-show="panelStatus">
+        <div class="input" v-show="panelStatus=='login'">
           <div>
             <n-popover placement="right" trigger="focus">
               <template #trigger>
@@ -37,7 +37,7 @@
       </transition>
       <!--注册模块-->
       <transition mode="in-out">
-        <div class="input" v-show="!panelStatus">
+        <div class="input" v-show="panelStatus=='register'">
           <div>
             <n-popover placement="right" trigger="focus">
               <template #trigger>
@@ -156,6 +156,7 @@ export default defineComponent({
     function login() {
       axios({
         method: "POST",
+        withCredentials:true,
         url: "https://cunyuqing.online:8081/account/Login",
         data: {
           account: loginForm.account,
@@ -171,6 +172,7 @@ export default defineComponent({
       if (registerForm.email) {
         await axios({
           method: "POST",
+          withCredentials:true,
           url: "https://cunyuqing.online:8081/account/AuthCode",
           data: {
             email: registerForm.email,
@@ -234,6 +236,7 @@ export default defineComponent({
   display: flex;
   justify-content: space-around;
   align-items: center;
+  overflow: hidden;
 }
 .loginpanel {
   width: 30%;

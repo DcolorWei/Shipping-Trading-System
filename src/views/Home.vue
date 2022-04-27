@@ -56,7 +56,12 @@
             width: 100%;
           "
         >
-          <n-button type="success" size="large" strong>
+          <n-button
+            type="success"
+            size="large"
+            strong
+            @click="router.push('/login')"
+          >
             产品经理说要有一个按钮
           </n-button>
         </div>
@@ -67,7 +72,7 @@
             justify-content: center;
             align-items: center;
             font-style: italic;
-            color:grey;
+            color: grey;
           "
         >
           <pre>
@@ -84,6 +89,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
 import { routeStore } from "@/store/route";
+import { messageStore } from "@/store/message";
 import Aside from "@/components/Aside.vue";
 import Top from "@/components/Top.vue";
 import router from "@/router";
@@ -93,10 +99,13 @@ export default defineComponent({
   name: "Home",
   setup() {
     const route = routeStore();
+    const message = messageStore();
+
     let showHome = ref(false);
     watch(
       route,
       () => {
+        message.updateMessage();
         router.push(route.path);
         if (route.path === "/") {
           showHome.value = true;
@@ -109,6 +118,7 @@ export default defineComponent({
 
     return {
       showHome,
+      router,
     };
   },
   components: {

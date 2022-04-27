@@ -7,41 +7,44 @@
           class="message-item"
           v-for="item in messageList"
           :key="item.messageId"
+          v-bind:style="{
+            //根据不同状态切换卡片颜色
+            background:
+              item.messageType == '0'
+                ? 'white'
+                : item.messageType == '1'
+                ? '#ECF5FF'
+                : '#F0F9EB',
+            'border-left': `4px solid ${
+              item.isRead == 1 ? 'transparent' : 'red'
+            }`,
+          }"
         >
-          <div>{{ item.companyName }}</div>
-          <div>{{ item.sendTime }}</div>
+          <div class="sender">{{ item.companyName }}</div>
+          <div class="sendtime">{{ item.sendTime }}</div>
         </div>
       </div>
       <div class="message-content" v-show="messageList.length > 0">
-        <div class="message-text">
+        <div v-if="messageContent == null" class="message-text">
           <n-skeleton text :repeat="10" />
           <n-skeleton text style="width: 60%" />
         </div>
+        <div v-else class="message-text">
+          {{ messageContent }}
+        </div>
       </div>
-      <!-- <div v-if="messageList.length == 0">
-        <div style="font-size: 200px; margin-bottom: -100px">🍵</div>
-        <n-result
-          status="209"
-          title="并不会有人找你"
-          description="一切尽在不言中"
-        >
-          <template #footer>
-            <n-button>真是个杯具</n-button>
-          </template>
-        </n-result>
-      </div> -->
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, watch } from "vue";
+import { defineComponent, reactive, Ref, ref, watch } from "vue";
 import { NSkeleton } from "naive-ui";
 import { messageStore } from "@/store/message";
-
+import { Message } from "./Message.entity";
 export default defineComponent({
   setup() {
-    let messageList: any[] = reactive([]);
+    let messageList: Message[] = reactive([]);
     watch(
       messageStore(),
       (news) => {
@@ -51,8 +54,11 @@ export default defineComponent({
         immediate: true,
       }
     );
+
+    let messageContent: Ref<string | null> = ref(null);
     return {
       messageList,
+      messageContent,
     };
   },
   components: {
@@ -99,6 +105,11 @@ export default defineComponent({
   box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.1);
   margin: 5% auto;
   background: white;
+  border-radius: 2%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .message-content {
@@ -111,5 +122,17 @@ export default defineComponent({
 
 .message-content .message-text {
   padding: 10%;
+}
+
+.sender {
+  margin: 0 auto;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 400;
+}
+.sendtime {
+  margin: 0 auto;
+  text-align: center;
+  color: gray;
 }
 </style>
