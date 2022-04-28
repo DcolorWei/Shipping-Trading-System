@@ -23,7 +23,7 @@ function updateMessage(): void {
         }
 
         //载入新消息列表
-        res.data.forEach((element: any) => {
+        res.data.forEach((element: Message) => {
             messageList.push(element)
         })
     }).catch(res => {//获取失败，展示示例数据
@@ -37,7 +37,7 @@ function updateMessage(): void {
             { messageId: 1, companyName: '系统消息', messageType: '0', sendTime: '2022-04-27 06:50:31', isRead: 0 },
             { messageId: 2, companyName: '好友请求', messageType: '1', sendTime: '2022-04-26 09:50:31', isRead: 1 },
             { messageId: 3, companyName: '询价动态', messageType: '2', sendTime: '2022-04-26 09:48:43', isRead: 0 }
-        ].forEach((element: any) => {
+        ].forEach((element: Message) => {
             messageList.push(element)
         })
     })
@@ -48,7 +48,7 @@ updateMessage();
 //创建websocket链接
 const ws = new WebSocket('wss://cunyuqing.online:8081/ws')
 //连接成功，初始化数据
-ws.onopen = () => (updateMessage());
+ws.onopen = (e) => { console.log(e); updateMessage() };
 
 //有消息更新
 ws.onmessage = () => (updateMessage());

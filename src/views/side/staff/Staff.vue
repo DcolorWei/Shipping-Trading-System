@@ -1,9 +1,5 @@
 <template>
-  <n-data-table
-    :columns="columns"
-    :data="staffdata"
-    :bordered="false"
-  />
+  <n-data-table :columns="columns" :data="staffdata" :bordered="false" />
 </template>
 
 <script lang="ts">
@@ -44,7 +40,7 @@ const createColumns = (): DataTableColumns<Staff> => {
               size: "small",
               style: "margin:1%;background:#EAEAEA",
             },
-            "查看"
+            { default: () => "查看" }
           ),
           h(
             NButton,
@@ -53,7 +49,7 @@ const createColumns = (): DataTableColumns<Staff> => {
               size: "small",
               style: "margin:1%;background:#FAC11B",
             },
-            "编辑"
+            { default: () => "编辑" }
           ),
           h(
             NButton,
@@ -62,7 +58,7 @@ const createColumns = (): DataTableColumns<Staff> => {
               size: "small",
               style: "margin:1%;background:#E63F32",
             },
-            "删除"
+            { default: () => "删除" }
           ),
         ];
       },
@@ -88,7 +84,7 @@ export default defineComponent({
     });
     return {
       staffdata,
-      columns: createColumns()
+      columns: createColumns(),
     };
   },
   components: {

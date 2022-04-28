@@ -5,7 +5,7 @@
       <div class="title">物流管理系统</div>
       <!--登录模块-->
       <transition>
-        <div class="input" v-show="panelStatus=='login'">
+        <div class="input" v-show="panelStatus == 'login'">
           <div>
             <n-popover placement="right" trigger="focus">
               <template #trigger>
@@ -37,7 +37,7 @@
       </transition>
       <!--注册模块-->
       <transition mode="in-out">
-        <div class="input" v-show="panelStatus=='register'">
+        <div class="input" v-show="panelStatus == 'register'">
           <div>
             <n-popover placement="right" trigger="focus">
               <template #trigger>
@@ -120,22 +120,15 @@ import { panelStatus, loginInfo, registerInfo } from "./Login.entity";
 import router from "@/router/index";
 import * as cryptoTS from "crypto-ts";
 import axios from "axios";
+axios.defaults.withCredentials = true;
 
 // import bcrypt from "bcrypt";
 export default defineComponent({
   name: "Login",
   setup() {
-    let loginForm: loginInfo = reactive({
-      account: null,
-      password: null,
-    });
+    let loginForm: loginInfo = reactive({} as loginInfo);
 
-    let registerForm: registerInfo = reactive({
-      account: null,
-      password: null,
-      email: null,
-      authCode: null,
-    });
+    let registerForm: registerInfo = reactive({} as registerInfo);
 
     //验证码倒计时
     let countDown: Ref<number> = ref(0);
@@ -156,7 +149,6 @@ export default defineComponent({
     function login() {
       axios({
         method: "POST",
-        withCredentials:true,
         url: "https://cunyuqing.online:8081/account/Login",
         data: {
           account: loginForm.account,
@@ -172,7 +164,7 @@ export default defineComponent({
       if (registerForm.email) {
         await axios({
           method: "POST",
-          withCredentials:true,
+          withCredentials: true,
           url: "https://cunyuqing.online:8081/account/AuthCode",
           data: {
             email: registerForm.email,
