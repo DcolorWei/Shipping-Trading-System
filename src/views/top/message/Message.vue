@@ -19,18 +19,20 @@
               item.isRead == 1 ? 'transparent' : 'red'
             }`,
           }"
+          @click="switchMessageContent(item.messageId)"
         >
           <div class="sender">{{ item.companyName }}</div>
           <div class="sendtime">{{ item.sendTime }}</div>
         </div>
       </div>
       <div class="message-content" v-show="messageList.length > 0">
-        <div v-if="messageContent == null" class="message-text">
-          <n-skeleton text :repeat="10" />
-          <n-skeleton text style="width: 60%" />
-        </div>
+        <div v-if="messageContent == null" class="message-text"></div>
         <div v-else class="message-text">
-          {{ messageContent }}
+          {{ messageContent.context }}
+        </div>
+        <div class="reply-btn">
+          <n-button @click="reply(messageContent.messageId, false)">取消</n-button>
+          <n-button @click="reply(messageContent.messageId, true)">确定</n-button>
         </div>
       </div>
     </div>
@@ -38,10 +40,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, Ref, ref, watch } from "vue";
-import { NSkeleton } from "naive-ui";
+import { defineComponent, reactive,watch } from "vue";
 import { messageStore } from "@/store/message";
 import { Message } from "./Message.entity";
+import { NButton } from "naive-ui";
+
+import axios from "axios";
+axios.defaults.withCredentials = true;
+
 export default defineComponent({
   setup() {
     let messageList: Message[] = reactive([]);
@@ -54,15 +60,47 @@ export default defineComponent({
         immediate: true,
       }
     );
+    let messageContent: { messageId?: number | null; context?: string | null } =reactive({});
+    function switchMessageContent(messageId: number): void {
+      messageContent.messageId = messageId;
+      messageContent.context = null;
+      axios({
+        url: "https://cunyuqing.online:8081/message/getMessageInfo",
+        method: "GET",
+        params: {
+          id: messageId,
+        },
+      })
+        .then((res) => {
+          messageContent.context = res.data.context;
+          messageList.find(
+            (e: Message) => e.messageId == messageId
+          )!.isRead = 1;
+        })
+        .catch(() => {
+          messageContent.context = "获取失败!";
+        });
+    }
 
-    let messageContent: Ref<string | null> = ref(null);
+    function reply(messageId: number, ok: boolean): void {
+      axios({
+        url: "https://cunyuqing.online:8081/message/company/reply",
+        method: "POST",
+        data: {
+          messageId: messageId,
+          ok: ok,
+        },
+      });
+    }
     return {
       messageList,
       messageContent,
+      switchMessageContent,
+      reply,
     };
   },
   components: {
-    NSkeleton,
+    NButton,
   },
 });
 </script>
