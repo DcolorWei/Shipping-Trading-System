@@ -19,7 +19,7 @@
               item.isRead == 1 ? 'transparent' : 'red'
             }`,
           }"
-          @click="switchMessageContent(item.messageId)"
+          @click="switchMessageContent(item.messageId,item.messageType)"
         >
           <div class="sender">{{ item.companyName }}</div>
           <div class="sendtime">{{ item.sendTime }}</div>
@@ -30,9 +30,28 @@
         <div v-else class="message-text">
           {{ messageContent.context }}
         </div>
-        <div class="reply-btn">
-          <n-button @click="reply(messageContent.messageId, false)">取消</n-button>
-          <n-button @click="reply(messageContent.messageId, true)">确定</n-button>
+        <div class="reply-btn" v-if="messageContent.messageType == 0">
+          <n-button @click="reply(messageContent.messageId, true)"
+            >确认</n-button
+          >
+        </div>
+        <div class="reply-btn" v-if="messageContent.messageType == 1">
+          <n-button @click="reply(messageContent.messageId, false)"
+            >拒绝</n-button
+          >
+          <n-button @click="reply(messageContent.messageId, true)"
+            >同意</n-button
+          >
+        </div>
+        <div class="reply-btn" v-if="messageContent.messageType == 2">
+          <n-button @click="reply(messageContent.messageId, true)"
+            >发送</n-button
+          >
+        </div>
+        <div class="reply-btn" v-if="messageContent.messageType == 3">
+          <n-button @click="reply(messageContent.messageId, true)"
+            >报价</n-button
+          >
         </div>
       </div>
     </div>
@@ -40,7 +59,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive,watch } from "vue";
+import { defineComponent, reactive, watch } from "vue";
 import { messageStore } from "@/store/message";
 import { Message } from "./Message.entity";
 import { NButton } from "naive-ui";
@@ -60,10 +79,18 @@ export default defineComponent({
         immediate: true,
       }
     );
-    let messageContent: { messageId?: number | null; context?: string | null } =reactive({});
-    function switchMessageContent(messageId: number): void {
+    let messageContent: {
+      messageId?: number | null;
+      context?: string | null;
+      messageType?: string | null;
+    } = reactive({});
+    function switchMessageContent(
+      messageId: number,
+      messageType: string
+    ): void {
       messageContent.messageId = messageId;
       messageContent.context = null;
+      messageContent.messageType = messageType;
       axios({
         url: "https://cunyuqing.online:8081/message/getMessageInfo",
         method: "GET",
@@ -160,6 +187,12 @@ export default defineComponent({
 
 .message-content .message-text {
   padding: 10%;
+  height: 60%;
+}
+
+.message-content .reply-btn {
+  display: flex;
+  justify-content: center;
 }
 
 .sender {
