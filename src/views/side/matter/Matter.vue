@@ -83,9 +83,12 @@ export default defineComponent({
       while (matterdata.length > 0) {
         matterdata.shift();
       }
-      res.data.forEach((element: Matter) => {
-        matterdata.push(element);
-      });
+
+      if (res!=null) {
+        res.data.forEach((element: Matter) => {
+          matterdata.push(element);
+        });
+      }
     });
     return {
       matterdata,

@@ -23,9 +23,11 @@ function updateMessage(): void {
         }
 
         //载入新消息列表
-        res.data.forEach((element: Message) => {
-            messageList.push(element)
-        })
+        if (res!=null) {
+            res.data.forEach((element: Message) => {
+                messageList.push(element)
+            })
+        }
     }).catch(res => {//获取失败，展示示例数据
         //清空旧消息列表
         while (messageList.length > 0) {

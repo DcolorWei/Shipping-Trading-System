@@ -1,9 +1,14 @@
 interface Staff {
-    messageId: number,
-    companyName: string,
-    messageType: string,
-    sendTime: string,
-    isRead: number
+    staffId: number | null,
+    sex: 'f' | 'm' | 'o' | null,
+    phone: string | null,
+    email: string | null,
+    fax: string | null,
+    joinDate: string | null,
+    birthDay: string | null,
+    country: string | null,
+    city: string | null,
+    address: string | null
 }
 
 export {

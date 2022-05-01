@@ -1,8 +1,5 @@
 <template>
-  <n-dialog-provider>
-    <n-data-table :columns="columns" :data="companydata" :bordered="false" />
-  </n-dialog-provider>
-
+  <n-data-table :columns="columns" :data="companydata" :bordered="false" />
   <div class="affix" @click="addCompany()">
     <n-icon size="40" :component="Add" />
   </div>
@@ -10,7 +7,7 @@
 
 <script lang="ts">
 import { Add } from "@vicons/ionicons5";
-import { defineComponent, h, reactive } from "vue";
+import { defineComponent, h, reactive, ref } from "vue";
 import { NDataTable, DataTableColumns, NButton, NIcon } from "naive-ui";
 import { Company } from "./Company.entity";
 import axios from "axios";
@@ -82,6 +79,13 @@ let companydata: Company[] = reactive([]);
 
 export default defineComponent({
   setup() {
+    const formValue = ref({
+      user: {
+        name: "",
+        age: "",
+      },
+      phone: "",
+    });
     axios({
       url: "https://cunyuqing.online:8081/company/getJointVenture",
       method: "GET",
@@ -90,9 +94,12 @@ export default defineComponent({
       while (companydata.length > 0) {
         companydata.shift();
       }
-      res.data.forEach((element: Company) => {
-        companydata.push(element);
-      });
+
+      if (res!=null) {
+        res.data.forEach((element: Company) => {
+          companydata.push(element);
+        });
+      }
     });
 
     function addCompany() {
@@ -104,11 +111,11 @@ export default defineComponent({
           companyId: Number(companyId),
         },
       })
-        .then((res) => {
+        .then(() => {
           alert("发送请求成功");
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          alert("请求重复");
         });
     }
 
@@ -124,18 +131,21 @@ export default defineComponent({
                 companyId: row.companyId,
               },
             })
-              .then((res) => {
+              .then(() => {
                 axios({
                   url: "https://cunyuqing.online:8081/company/getJointVenture",
                   method: "GET",
-                }).then(() => {
+                }).then((res) => {
                   //清空
                   while (companydata.length > 0) {
                     companydata.shift();
                   }
-                  res.data.forEach((element: Company) => {
-                    companydata.push(element);
-                  });
+
+                  if (res!=null) {
+                    res.data.forEach((element: Company) => {
+                      companydata.push(element);
+                    });
+                  }
                 });
                 alert("删除成功！");
               })
@@ -147,6 +157,7 @@ export default defineComponent({
       }),
       addCompany,
       Add,
+      formValue,
     };
   },
   components: {
@@ -166,5 +177,19 @@ export default defineComponent({
   position: fixed;
   right: 6%;
   bottom: 20%;
+}
+
+.form-table {
+  padding: 1% 5%;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.btns {
+  display: flex;
+  justify-content: space-around;
 }
 </style>
