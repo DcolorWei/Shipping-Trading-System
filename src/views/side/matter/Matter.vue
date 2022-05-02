@@ -10,6 +10,7 @@
     @cancel="addStatus = false"
     @confirm="(value) => addMatter(value)"
   />
+  <inquire v-if="inquireStatus" :tableInfo="tableInfo" />
 </template>
 
 <script lang="ts">
@@ -17,6 +18,7 @@ import { defineComponent, h, reactive, ref, Ref } from "vue";
 import { NDataTable, DataTableColumns, NButton, NIcon } from "naive-ui";
 import { Matter, Matters } from "./Matter.entity";
 import Popup from "@/components/Table/Popup.vue";
+import Inquire from "@/components/Table/Inquire.vue";
 import axios from "axios";
 import { Add } from "@vicons/ionicons5";
 axios.defaults.withCredentials = true;
@@ -48,7 +50,7 @@ const createColumns = (): DataTableColumns<Matter> => {
       key: "actions",
       align: "center",
       width: 300,
-      render() {
+      render(row) {
         return [
           h(
             NButton,
@@ -56,6 +58,10 @@ const createColumns = (): DataTableColumns<Matter> => {
               tertiary: true,
               size: "small",
               style: "margin:1%;background:#EAEAEA",
+              onclick: () => {
+                inquireStatus.value = true;
+                getBargainCompany(row.orderId);
+              },
             },
             { default: () => "查看" }
           ),
@@ -67,7 +73,11 @@ const createColumns = (): DataTableColumns<Matter> => {
 
 let matterdata: Matter[] = reactive([]);
 
+let tableInfo: any[] = reactive([]);
+
 let addStatus: Ref<boolean> = ref(false);
+
+let inquireStatus: Ref<boolean> = ref(false);
 
 const MatterInfo: Partial<Matters> = reactive({
   phone: null,
@@ -166,6 +176,24 @@ const matterlabel: any = [
     type: "table",
   },
 ];
+
+function getBargainCompany(orderId: number | null) {
+  axios({
+    url: "https://cunyuqing.online:8081/order/getAllBargain",
+    method: "GET",
+    params: {
+      orderId: orderId,
+    },
+  }).then((res) => {
+    while (tableInfo.length > 0) {
+      tableInfo.shift();
+    }
+    res.data.forEach((element: any) => {
+      tableInfo.push(element);
+    });
+  });
+}
+
 function getAllMatter() {
   axios({
     url: "https://cunyuqing.online:8081/order/getAllOrder",
@@ -204,12 +232,15 @@ export default defineComponent({
       Add,
       columns: createColumns(),
       addStatus,
+      inquireStatus,
       MatterInfo,
+      tableInfo,
       matterlabel,
       addMatter,
     };
   },
   components: {
+    Inquire,
     NIcon,
     NDataTable,
     Popup,
