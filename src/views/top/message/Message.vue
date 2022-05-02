@@ -19,7 +19,7 @@
               item.isRead == 1 ? 'transparent' : 'red'
             }`,
           }"
-          @click="switchMessageContent(item.messageId,item.messageType)"
+          @click="switchMessageContent(item.messageId, item.messageType)"
         >
           <div class="sender">{{ item.companyName }}</div>
           <div class="sendtime">{{ item.sendTime }}</div>
@@ -67,58 +67,54 @@ import { NButton } from "naive-ui";
 import axios from "axios";
 axios.defaults.withCredentials = true;
 
+let messageList: Message[] = reactive([]);
+watch(
+  messageStore(),
+  (news) => {
+    messageList = news.messageList;
+  },
+  {
+    immediate: true,
+  }
+);
+let messageContent: {
+  messageId?: number | null;
+  context?: string | null;
+  messageType?: string | null;
+} = reactive({});
+function switchMessageContent(messageId: number, messageType: string): void {
+  messageContent.messageId = messageId;
+  messageContent.context = null;
+  messageContent.messageType = messageType;
+  axios({
+    url: "https://cunyuqing.online:8081/message/getMessageInfo",
+    method: "GET",
+    params: {
+      id: messageId,
+    },
+  })
+    .then((res) => {
+      messageContent.context = res.data.context;
+      messageList.find((e: Message) => e.messageId == messageId)!.isRead = 1;
+    })
+    .catch(() => {
+      messageContent.context = "获取失败!";
+    });
+}
+
+function reply(messageId: number, ok: boolean): void {
+  axios({
+    url: "https://cunyuqing.online:8081/message/company/reply",
+    method: "POST",
+    data: {
+      messageId: messageId,
+      ok: ok,
+    },
+  });
+}
+
 export default defineComponent({
   setup() {
-    let messageList: Message[] = reactive([]);
-    watch(
-      messageStore(),
-      (news) => {
-        messageList = news.messageList;
-      },
-      {
-        immediate: true,
-      }
-    );
-    let messageContent: {
-      messageId?: number | null;
-      context?: string | null;
-      messageType?: string | null;
-    } = reactive({});
-    function switchMessageContent(
-      messageId: number,
-      messageType: string
-    ): void {
-      messageContent.messageId = messageId;
-      messageContent.context = null;
-      messageContent.messageType = messageType;
-      axios({
-        url: "https://cunyuqing.online:8081/message/getMessageInfo",
-        method: "GET",
-        params: {
-          id: messageId,
-        },
-      })
-        .then((res) => {
-          messageContent.context = res.data.context;
-          messageList.find(
-            (e: Message) => e.messageId == messageId
-          )!.isRead = 1;
-        })
-        .catch(() => {
-          messageContent.context = "获取失败!";
-        });
-    }
-
-    function reply(messageId: number, ok: boolean): void {
-      axios({
-        url: "https://cunyuqing.online:8081/message/company/reply",
-        method: "POST",
-        data: {
-          messageId: messageId,
-          ok: ok,
-        },
-      });
-    }
     return {
       messageList,
       messageContent,

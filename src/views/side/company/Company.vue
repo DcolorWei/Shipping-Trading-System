@@ -76,49 +76,48 @@ const createColumns = ({
 };
 
 let companydata: Company[] = reactive([]);
+const formValue = ref({
+  user: {
+    name: "",
+    age: "",
+  },
+  phone: "",
+});
+axios({
+  url: "https://cunyuqing.online:8081/company/getJointVenture",
+  method: "GET",
+}).then((res) => {
+  //清空
+  while (companydata.length > 0) {
+    companydata.shift();
+  }
+
+  if (res != null) {
+    res.data.forEach((element: Company) => {
+      companydata.push(element);
+    });
+  }
+});
+
+function addCompany() {
+  let companyId = prompt("输入对方ID");
+  axios({
+    url: "https://cunyuqing.online:8081/company/makeFriends",
+    method: "POST",
+    data: {
+      companyId: Number(companyId),
+    },
+  })
+    .then(() => {
+      alert("发送请求成功");
+    })
+    .catch(() => {
+      alert("请求重复");
+    });
+}
 
 export default defineComponent({
   setup() {
-    const formValue = ref({
-      user: {
-        name: "",
-        age: "",
-      },
-      phone: "",
-    });
-    axios({
-      url: "https://cunyuqing.online:8081/company/getJointVenture",
-      method: "GET",
-    }).then((res) => {
-      //清空
-      while (companydata.length > 0) {
-        companydata.shift();
-      }
-
-      if (res!=null) {
-        res.data.forEach((element: Company) => {
-          companydata.push(element);
-        });
-      }
-    });
-
-    function addCompany() {
-      let companyId = prompt("输入对方ID");
-      axios({
-        url: "https://cunyuqing.online:8081/company/makeFriends",
-        method: "POST",
-        data: {
-          companyId: Number(companyId),
-        },
-      })
-        .then(() => {
-          alert("发送请求成功");
-        })
-        .catch(() => {
-          alert("请求重复");
-        });
-    }
-
     return {
       companydata,
       columns: createColumns({
@@ -141,7 +140,7 @@ export default defineComponent({
                     companydata.shift();
                   }
 
-                  if (res!=null) {
+                  if (res != null) {
                     res.data.forEach((element: Company) => {
                       companydata.push(element);
                     });

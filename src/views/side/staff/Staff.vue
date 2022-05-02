@@ -1,15 +1,30 @@
 <template>
   <n-data-table :columns="columns" :data="staffdata" :bordered="false" />
-  <popup v-if="editStatus" :staffInfo="staffInfo" :label="label">
-    <template></template>
-  </popup>
+  <popup
+    v-if="editStatus"
+    :formInfo="staffInfo"
+    :label="staffInfolabel"
+    @cancel="editStatus = false"
+    @confirm="(value) => addStaff(value)"
+  />
+  <popup
+    v-if="addStatus"
+    :formInfo="staffInfoSimple"
+    :label="staffInfoSimplelabel"
+    @cancel="addStatus = false"
+    @confirm="(value) => addStaff(value)"
+  />
+  <div class="affix" @click="addStatus = true">
+    <n-icon size="40" :component="Add" />
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, h, reactive, ref, Ref } from "vue";
-import { NDataTable, DataTableColumns, NButton } from "naive-ui";
+import { Add } from "@vicons/ionicons5";
+import { defineComponent, h, reactive, ref, Ref} from "vue";
+import { NDataTable, DataTableColumns, NButton, NIcon } from "naive-ui";
 import { Staff } from "./Staff.entity";
-import Popup from "@/components/Table/popup.vue";
+import Popup from "@/components/Table/Popup.vue";
 import axios from "axios";
 axios.defaults.withCredentials = true;
 
@@ -64,8 +79,8 @@ const createColumns = ({
                     staffId: row.staffId,
                   },
                 }).then((res) => {
-                  for (let i in res.data){
-                    staffInfo[i as keyof Staff]=res.data[i]
+                  for (let i in staffInfo) {
+                    staffInfo[i as keyof Staff] = res.data[i];
                   }
                   editStatus.value = true;
                 });
@@ -103,8 +118,14 @@ const staffInfo: Staff = reactive({
   address: null,
 });
 
+const staffInfoSimple = reactive({
+  staffName: "",
+  staffJob: "",
+});
+
 let editStatus: Ref<boolean> = ref(false);
-const label: string[] = [
+let addStatus: Ref<boolean> = ref(false);
+const staffInfolabel: string[] = [
   "ID",
   "性别",
   "电话",
@@ -116,70 +137,96 @@ const label: string[] = [
   "城市",
   "地址",
 ];
+const staffInfoSimplelabel: string[] = ["姓名", "职务"];
 
-setInterval(() => {
-  staffInfo.staffId!++;
-}, 1000);
+function getAllStaff(): void {
+  axios({
+    url: "https://cunyuqing.online:8081/staff/getStaff",
+    method: "GET",
+  }).then((res) => {
+    //清空
+    while (staffdata.length > 0) {
+      staffdata.shift();
+    }
+    if (res !== null) {
+      res.data.forEach((element: Staff) => {
+        staffdata.push(element);
+      });
+    }
+  });
+}
 
+getAllStaff();
+
+function addStaff(value: { staffName: string; staffJob: string }) {
+  axios({
+    url: "https://cunyuqing.online:8081/staff/addStaff",
+    method: "POST",
+    data: value,
+  })
+    .then(() => {
+      alert("处理完成！");
+    })
+    .catch((err) => {
+      alert("信息错误！");
+    })
+    .finally(() => {
+      addStatus.value = false;
+      getAllStaff();
+    });
+}
+
+function deleteStaff(row: Staff) {
+  if (confirm(`确定要删除与员工${row.staffId}？`)) {
+    axios({
+      url: "https://cunyuqing.online:8081/staff/fireStaff",
+      method: "GET",
+      params: {
+        id: row.staffId,
+      },
+    })
+      .then(() => {
+        getAllStaff();
+        alert("删除成功！");
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
+  }
+}
 export default defineComponent({
   setup() {
-    axios({
-      url: "https://cunyuqing.online:8081/staff/getStaff",
-      method: "GET",
-    }).then((res) => {
-      //清空
-      while (staffdata.length > 0) {
-        staffdata.shift();
-      }
-      if (res !== null) {
-        res.data.forEach((element: Staff) => {
-          staffdata.push(element);
-        });
-      }
-    });
-
     return {
       staffdata,
       staffInfo,
-      label,
+      staffInfolabel,
+      staffInfoSimple,
+      staffInfoSimplelabel,
       editStatus,
-      columns: createColumns({deleteStaff(row: Staff) {
-          if (confirm(`确定要删除与${row.staffId}联系？`)) {
-            axios({
-              url: "https://cunyuqing.online:8081/staff/fireStaff",
-              method: "GET",
-              params: {
-                id: row.staffId,
-              },
-            })
-              .then(() => {
-                axios({
-                  url: "https://cunyuqing.online:8081/staff/getStaff",
-                  method: "GET",
-                }).then((res) => {
-                  //清空
-                  while (staffdata.length > 0) {
-                    staffdata.shift();
-                  }
-
-                  if (res!=null) {
-                    res.data.forEach((element: Staff) => {
-                      staffdata.push(element);
-                    });
-                  }
-                });
-                alert("删除成功！");
-              })
-              .catch((err) => {
-                alert(err.message);
-              });
-          }
-        },}),
+      addStatus,
+      addStaff,
+      columns: createColumns({
+        deleteStaff,
+      }),
+      Add,
     };
   },
   components: {
     NDataTable,
+    NIcon,
     Popup,
   },
 });
 </script>
+<style scoped>
+.affix {
+  width: 40px;
+  height: 40px;
+  background: #ffd664;
+  border: 3px solid #474747;
+  border-radius: 50%;
+  position: fixed;
+  right: 6%;
+  bottom: 20%;
+}
+</style>

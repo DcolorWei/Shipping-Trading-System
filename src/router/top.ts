@@ -4,7 +4,7 @@ const topRouter = [
         path: '/account',
         name: "Manage",
         itemName: "MANAGE",
-        component: () => import('../views/side/account/Account.vue')
+        component: () => import('../views/side/chart/Chart.vue')
     },
     {
         path: '/query',
