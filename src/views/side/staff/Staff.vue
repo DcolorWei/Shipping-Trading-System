@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import { Add } from "@vicons/ionicons5";
-import { defineComponent, h, reactive, ref, Ref} from "vue";
+import { defineComponent, h, reactive, ref, Ref } from "vue";
 import { NDataTable, DataTableColumns, NButton, NIcon } from "naive-ui";
 import { Staff } from "./Staff.entity";
 import Popup from "@/components/Table/Popup.vue";
@@ -125,19 +125,22 @@ const staffInfoSimple = reactive({
 
 let editStatus: Ref<boolean> = ref(false);
 let addStatus: Ref<boolean> = ref(false);
-const staffInfolabel: string[] = [
-  "ID",
-  "性别",
-  "电话",
-  "邮箱",
-  "传真",
-  "加入时间",
-  "生日",
-  "国家",
-  "城市",
-  "地址",
+const staffInfolabel: any = [
+  { name: "ID", size: 8, type: "input" },
+  { name: "性别", size: 8, type: "input" },
+  { name: "电话", size: 8, type: "input" },
+  { name: "邮箱", size: 8, type: "input" },
+  { name: "传真", size: 8, type: "input" },
+  { name: "加入时间", size: 8, type: "input" },
+  { name: "生日", size: 8, type: "input" },
+  { name: "国家", size: 8, type: "input" },
+  { name: "城市", size: 8, type: "input" },
+  { name: "地址", size: 8, type: "input" },
 ];
-const staffInfoSimplelabel: string[] = ["姓名", "职务"];
+const staffInfoSimplelabel: any = [
+  { name: "姓名", size: 12, type: "input" },
+  { name: "职务", size: 12, type: "input" },
+];
 
 function getAllStaff(): void {
   axios({

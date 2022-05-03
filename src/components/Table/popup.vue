@@ -182,6 +182,7 @@ const createColumns = (): DataTableColumns<any> => {
               tertiary: true,
               size: "small",
               style: "margin:1%;background:#E63F32",
+              onclick: () => deleteItem(row),
             },
             { default: () => "删除" }
           );
@@ -198,6 +199,10 @@ function addItem(item: any) {
   data.push(newItemModel);
 }
 
+function deleteItem(item: any) {
+  console.log(item)
+  data.splice(data.findIndex((e) => e == item),  1);
+}
 export default defineComponent({
   name: "Popup",
   props: {
@@ -224,6 +229,7 @@ export default defineComponent({
       data,
       cancel,
       addItem,
+      deleteItem,
       columns: createColumns(),
     };
   },
@@ -248,7 +254,7 @@ export default defineComponent({
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;

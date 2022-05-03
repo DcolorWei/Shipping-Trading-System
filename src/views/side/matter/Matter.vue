@@ -10,7 +10,18 @@
     @cancel="addStatus = false"
     @confirm="(value) => addMatter(value)"
   />
-  <inquire v-if="inquireStatus" :tableInfo="tableInfo" />
+  <inquire
+    v-if="inquireStatus"
+    :orderInfo="orderInfo"
+    :tableInfo="tableInfo"
+    @cancel="inquireStatus = false"
+    @confirm="
+      (value) => {
+        submitPrice(value);
+        inquireStatus = false;
+      }
+    "
+  />
 </template>
 
 <script lang="ts">
@@ -41,6 +52,16 @@ const createColumns = (): DataTableColumns<Matter> => {
       align: "center",
     },
     {
+      title: "陆运方",
+      key: "landTransCompanyName",
+      align: "center",
+    },
+    {
+      title: "海运方",
+      key: "seaTransCompanyName",
+      align: "center",
+    },
+    {
       title: "当前状态",
       key: "status",
       align: "center",
@@ -59,6 +80,16 @@ const createColumns = (): DataTableColumns<Matter> => {
               size: "small",
               style: "margin:1%;background:#EAEAEA",
               onclick: () => {
+                axios({
+                  url: "https://cunyuqing.online:8081/order/getOrderInfo",
+                  method: "GET",
+                  params: {
+                    orderId: row.orderId,
+                  },
+                }).then((res) => {
+                  console.log(res.data);
+                });
+
                 inquireStatus.value = true;
                 getBargainCompany(row.orderId);
               },
@@ -224,6 +255,11 @@ function addMatter(value: any) {
   });
 }
 
+//烂尾设计
+function submitPrice(value: any) {
+  console.log(value);
+}
+
 export default defineComponent({
   setup() {
     getAllMatter();
@@ -237,6 +273,7 @@ export default defineComponent({
       tableInfo,
       matterlabel,
       addMatter,
+      submitPrice,
     };
   },
   components: {
