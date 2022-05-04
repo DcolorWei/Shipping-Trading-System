@@ -17,7 +17,7 @@
     @cancel="inquireStatus = false"
     @confirm="
       (value) => {
-        submitPrice(value);
+        submitSelectCompany(orderId, selectList);
         inquireStatus = false;
       }
     "
@@ -87,7 +87,9 @@ const createColumns = (): DataTableColumns<Matter> => {
                     orderId: row.orderId,
                   },
                 }).then((res) => {
-                  console.log(res.data);
+                  for (let i in res.data) {
+                    orderInfo[i] = res.data[i];
+                  }
                 });
 
                 inquireStatus.value = true;
@@ -105,6 +107,8 @@ const createColumns = (): DataTableColumns<Matter> => {
 let matterdata: Matter[] = reactive([]);
 
 let tableInfo: any[] = reactive([]);
+
+let orderInfo: any = reactive({});
 
 let addStatus: Ref<boolean> = ref(false);
 
@@ -244,20 +248,23 @@ function getAllMatter() {
 }
 
 function addMatter(value: any) {
+  addStatus.value = false;
   axios({
     url: "https://cunyuqing.online:8081/order/submitOrder",
     method: "POST",
     data: value,
   }).finally(() => {
-    alert("添加成功");
     getAllMatter();
-    addStatus.value = false;
+    alert("添加成功！");
   });
 }
 
 //烂尾设计
-function submitPrice(value: any) {
-  console.log(value);
+function submitSelectCompany(orderId: number, selectList: any[]) {
+  console.log(orderId, selectList);
+  selectList.forEach((element) => {
+    1;
+  });
 }
 
 export default defineComponent({
@@ -271,9 +278,10 @@ export default defineComponent({
       inquireStatus,
       MatterInfo,
       tableInfo,
+      orderInfo,
       matterlabel,
       addMatter,
-      submitPrice,
+      submitSelectCompany,
     };
   },
   components: {

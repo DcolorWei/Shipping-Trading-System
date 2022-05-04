@@ -12,6 +12,10 @@
         //阻止事件冒泡
       "
     >
+      <div style="margin-bottom: 5%">
+        <div><b>发货地址：</b>{{ showAddress(orderInfo.sendAddress) }}</div>
+        <div><b>收货地址：</b>{{ showAddress(orderInfo.receiveAddress) }}</div>
+      </div>
       <n-data-table :columns="columns" :data="tableInfo" />
       <div style="display: flex; justify-content: center; margin-top: 4%">
         <n-button style="margin: 0 1%" @click="cancel()">取消</n-button>
@@ -37,6 +41,7 @@ import {
   CloseCircleOutline,
   ReloadOutline,
 } from "@vicons/ionicons5";
+import axios from "axios";
 
 //被选择的公司ID
 let selectCompany: number[] = [];
@@ -86,6 +91,13 @@ const createColumns = (): DataTableColumns<any> => {
                   row.price = 10000 + Math.floor(5000 * Math.random());
                 }, 3000);
                 row.status = 0;
+                axios({
+                  url: "/order/askForPrice",
+                  method: "POST",
+                  data: {
+                    orderId: row.companyId,
+                  },
+                });
               },
             },
             { default: () => "询价" }
@@ -168,11 +180,19 @@ const createColumns = (): DataTableColumns<any> => {
     },
   ];
 };
+function showAddress(address: {
+  country: string;
+  city: string;
+  address: string;
+}) {
+  return address.country + " " + address.city + " " + address.address;
+}
 
 export default defineComponent({
   name: "Inquire",
   props: {
     tableInfo: {},
+    orderInfo: {},
   },
   emits: ["cancel", "confirm"],
 
@@ -191,6 +211,7 @@ export default defineComponent({
       columns: createColumns(),
       cancel,
       confirm,
+      showAddress,
     };
   },
   components: {

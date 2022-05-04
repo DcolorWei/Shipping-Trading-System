@@ -200,8 +200,22 @@ function addItem(item: any) {
 }
 
 function deleteItem(item: any) {
-  console.log(item)
-  data.splice(data.findIndex((e) => e == item),  1);
+  console.log(item);
+  data.splice(
+    data.findIndex((e) => e == item),
+    1
+  );
+}
+
+function timestampToTime(timestamp: number) {
+  var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+  var Y = date.getFullYear() + "-";
+  var M =
+    (date.getMonth() + 1 < 10
+      ? "0" + (date.getMonth() + 1)
+      : date.getMonth() + 1) + "-";
+  var D = date.getDate();
+  return Y + M + D;
 }
 export default defineComponent({
   name: "Popup",
@@ -216,8 +230,11 @@ export default defineComponent({
     const formInfoCopy = reactive(JSON.parse(JSON.stringify(props.formInfo)));
     function confirm() {
       //烂尾标记
-      data.pop();
-      formInfoCopy.cargos = data;
+      formInfoCopy.cargos = data.slice(0, -1);
+      data = data.slice(-1);
+      
+      formInfoCopy.deliveryDate = timestampToTime(formInfoCopy.deliveryDate);
+      formInfoCopy.hopeReachDate = timestampToTime(formInfoCopy.hopeReachDate);
       ctx.emit("confirm", formInfoCopy);
     }
     function cancel() {
