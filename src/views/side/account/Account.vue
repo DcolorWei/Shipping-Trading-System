@@ -4,8 +4,7 @@
       <div class="avatar">
         <n-avatar
           :size="100"
-          src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F9e%2F32%2F9a%2F9e329acc0c79523b0204f6ed7ea1e45e.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1653746645&t=f79876514d1f70af33a41cc14ea07084"
-        >
+          src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fi0.hdslb.com%2Fbfs%2Farticle%2Fd30cf9e20e8ff953efa909b9f0a450cbd22c75dc.jpg&refer=http%3A%2F%2Fi0.hdslb.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654348462&t=4b555a9293a70c53a4d65364169af19a">
         </n-avatar>
       </div>
       <div class="company-info">

@@ -20,17 +20,20 @@
               <n-input
                 v-if="label[index].type == 'input'"
                 v-model:value="formInfoCopy[item]"
+                placeholder=""
               />
               <n-select
                 v-if="label[index].type == 'select'"
                 v-model:value="formInfoCopy[item]"
                 :options="label[index].options"
+                placeholder=""
               />
               <n-date-picker
                 v-if="label[index].type == 'date'"
                 v-model:value="formInfoCopy[item]"
                 type="date"
                 clearable
+                placeholder=""
               />
               <n-data-table
                 v-if="label[index].type == 'table'"
@@ -45,7 +48,7 @@
                     :key="index"
                     :span="8"
                   >
-                    <n-input v-model:value="formInfoCopy[item][i]" />
+                    <n-input v-model:value="formInfoCopy[item][i]"  placeholder="" />
                   </n-col>
                 </n-row>
               </div>
@@ -88,36 +91,42 @@ let newItem = reactive({
 let newItemModel = {
   cargoName: h(NInput, {
     tertiary: true,
+    placeholder:"",
     onUpdateValue(v) {
       newItem.cargoName = v;
     },
   }),
   cargoModel: h(NInput, {
     tertiary: true,
+     placeholder:"",
     onUpdateValue(v) {
       newItem.cargoModel = v;
     },
   }),
   cargoSize: h(NInput, {
     tertiary: true,
+     placeholder:"",
     onUpdateValue(v) {
       newItem.cargoSize = v;
     },
   }),
   cargoNum: h(NInput, {
     tertiary: true,
+     placeholder:"",
     onUpdateValue(v) {
       newItem.cargoNum = v;
     },
   }),
   category: h(NInput, {
     tertiary: true,
+     placeholder:"",
     onUpdateValue(v) {
       newItem.category = v;
     },
   }),
   cargoWeight: h(NInput, {
     tertiary: true,
+     placeholder:"",
     onUpdateValue(v) {
       newItem.cargoWeight = v;
     },
@@ -232,7 +241,7 @@ export default defineComponent({
       //烂尾标记
       formInfoCopy.cargos = data.slice(0, -1);
       data = data.slice(-1);
-      
+
       formInfoCopy.deliveryDate = timestampToTime(formInfoCopy.deliveryDate);
       formInfoCopy.hopeReachDate = timestampToTime(formInfoCopy.hopeReachDate);
       ctx.emit("confirm", formInfoCopy);
