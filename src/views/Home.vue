@@ -105,7 +105,6 @@ export default defineComponent({
     watch(
       route,
       () => {
-        message.updateMessage();
         router.push(route.path);
         if (route.path === "/") {
           showHome.value = true;
