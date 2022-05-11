@@ -25,7 +25,7 @@
           <div class="sendtime">{{ item.sendTime }}</div>
         </div>
       </div>
-      <div class="message-content" v-show="messageList.length > 0">
+      <div class="message-content">
         <div v-if="messageContent == null" class="message-text"></div>
         <div v-else class="message-text">
           {{ messageContent.context }}
@@ -77,11 +77,13 @@ watch(
     immediate: true,
   }
 );
+
 let messageContent: {
   messageId?: number | null;
   context?: string | null;
   messageType?: string | null;
 } = reactive({});
+
 function switchMessageContent(messageId: number, messageType: string): void {
   messageContent.messageId = messageId;
   messageContent.context = null;

@@ -13,6 +13,7 @@
   <inquire
     v-if="inquireStatus"
     :orderInfo="orderInfo"
+    :a="'2'"
     :tableInfo="tableInfo"
     @cancel="inquireStatus = false"
     @confirm="
