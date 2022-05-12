@@ -8,7 +8,7 @@
     :formInfo="MatterInfo"
     :label="matterlabel"
     @cancel="addStatus = false"
-    @confirm="(value) => addMatter(value)"
+    @confirm="(value, test) => addMatter(value)"
   />
   <inquire
     v-if="inquireStatus"
@@ -52,11 +52,7 @@ const createColumns = (): DataTableColumns<Matter> => {
       key: "startDate",
       align: "center",
     },
-    {
-      title: "陆运方",
-      key: "landTransCompanyName",
-      align: "center",
-    },
+
     {
       title: "海运方",
       key: "seaTransCompanyName",
@@ -261,8 +257,14 @@ function addMatter(value: any) {
 }
 
 //烂尾设计
-function submitSelectCompany(value: number[]):void {
-  console.log(value[0]);
+function submitSelectCompany(value: any): void {
+  axios({
+    url: "https://cunyuqing.online:8081/order/chooseAgent",
+    method: "POST",
+    data: value,
+  }).then(()=>{
+    alert('这不就成了嘛，然后你就可以等了')
+  });
 }
 
 export default defineComponent({
