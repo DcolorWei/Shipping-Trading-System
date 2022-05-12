@@ -18,7 +18,7 @@
     @cancel="inquireStatus = false"
     @confirm="
       (value) => {
-        submitSelectCompany(orderId, selectList);
+        submitSelectCompany(value);
         inquireStatus = false;
       }
     "
@@ -261,11 +261,8 @@ function addMatter(value: any) {
 }
 
 //烂尾设计
-function submitSelectCompany(orderId: number, selectList: any[]) {
-  console.log(orderId, selectList);
-  selectList.forEach((element) => {
-    1;
-  });
+function submitSelectCompany(value: number[]):void {
+  console.log(value[0]);
 }
 
 export default defineComponent({

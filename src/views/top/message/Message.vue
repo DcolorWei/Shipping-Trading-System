@@ -49,9 +49,15 @@
           >
         </div>
         <div class="reply-btn" v-if="messageContent.messageType == 3">
-          <n-button @click="reply(messageContent.messageId, true)"
-            >报价</n-button
-          >
+          <div style="width: 40%; display: flex">
+            <n-input-number :min="100" :step="100" v-model:value="bargain"></n-input-number>
+            <n-button
+              @click="
+                replyBargain(messageContent.context.data.orderId, bargain)
+              "
+              >报价</n-button
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -59,10 +65,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, watch } from "vue";
+import { defineComponent, reactive, ref, Ref, watch } from "vue";
 import { messageStore } from "@/store/message";
 import { Message } from "./Message.entity";
-import { NButton } from "naive-ui";
+import { NButton, NInput,NInputNumber } from "naive-ui";
 
 import axios from "axios";
 axios.defaults.withCredentials = true;
@@ -96,7 +102,7 @@ function switchMessageContent(messageId: number, messageType: string): void {
     },
   })
     .then((res) => {
-      messageContent.context = res.data.context;
+      messageContent.context = res.data;
       messageList.find((e: Message) => e.messageId == messageId)!.isRead = 1;
     })
     .catch(() => {
@@ -115,6 +121,19 @@ function reply(messageId: number, ok: boolean): void {
   });
 }
 
+let bargain: Ref<number|null> = ref(null);
+
+function replyBargain(orderId: number, bargain: number): void {
+  axios({
+    url: "https://cunyuqing.online:8081/order/replyBargain",
+    method: "POST",
+    data: {
+      bargain: bargain,
+      orderId: orderId,
+    },
+  });
+}
+
 export default defineComponent({
   setup() {
     return {
@@ -122,10 +141,13 @@ export default defineComponent({
       messageContent,
       switchMessageContent,
       reply,
+      bargain,
+      replyBargain,
     };
   },
   components: {
     NButton,
+    NInputNumber
   },
 });
 </script>
